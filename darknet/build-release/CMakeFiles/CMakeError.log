@@ -1,0 +1,14 @@
+Looking for a CUDA compiler failed with the following output:
+CMake Error at /usr/share/cmake-3.25/Modules/CMakeDetermineCUDACompiler.cmake:180 (message):
+  Failed to find nvcc.
+
+  Compiler requires the CUDA toolkit.  Please set the CUDAToolkit_ROOT
+  variable.
+Call Stack (most recent call first):
+  CMakeLists.txt:2 (project)
+
+
+-- Configuring incomplete, errors occurred!
+See also "/home/pi/Desktop/Sensing/darknet/build-release/CMakeFiles/CheckCUDA/CMakeFiles/CMakeOutput.log".
+See also "/home/pi/Desktop/Sensing/darknet/build-release/CMakeFiles/CheckCUDA/CMakeFiles/CMakeError.log".
+
