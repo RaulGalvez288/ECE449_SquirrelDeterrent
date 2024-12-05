@@ -46,16 +46,12 @@ try:
     while (time.time() - start) < 10:
         print("forward")
         forward(seconds)
-        time.sleep(1)
         print("reverse")
         reverse(seconds)
-        time.sleep(1)
         print("forward")
         forward(seconds)
-        time.sleep(1)
         print("reverse")
         reverse(seconds)
-        time.sleep(1)
 
 except KeyboardInterrupt:
     print("Program interrupted by user.")

@@ -12,8 +12,8 @@ line.request(consumer="relay_control", type=gpiod.LINE_REQ_DIR_OUT, default_vals
 
 try:
     start_time = time.time()  # Record the start time
-
-    while time.time() - start_time < 5:  # Run the loop for 15 seconds
+    print("Floodlight is on")
+    while time.time() - start_time < 10:  # Run the loop for 15 seconds
         # Turn the relay on (active LOW)
         line.set_value(1)  # Activate relay
     
