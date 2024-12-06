@@ -8,15 +8,15 @@ from threading import Thread
 # GPIO setup
 CHIP = "gpiochip0"  # GPIO chip name for Raspberry Pi 5
 PIR_PIN = 2  # GPIO pin connected to the PIR sensor
-INPUT_PIN = 12  # GPIO pin for detecting 5V input
+SWITCH_PIN = 12  # GPIO pin for detecting either GND or 5V
 
-# Access GPIO chip and configure the PIR sensor and input line
+# Access the GPIO chip and configure the PIR sensor and switch line
 chip = gpiod.Chip(CHIP)
 pir_line = chip.get_line(PIR_PIN)
-input_line = chip.get_line(INPUT_PIN)
+switch_line = chip.get_line(SWITCH_PIN)
 
 pir_line.request(consumer="pir_sensor", type=gpiod.LINE_REQ_DIR_IN)  # Set PIR as input
-input_line.request(consumer="input_detector", type=gpiod.LINE_REQ_DIR_IN)  # Set input pin as input
+switch_line.request(consumer="switch_detector", type=gpiod.LINE_REQ_DIR_IN)  # Set switch pin as an input
 
 # Global flag for the loop
 condition = True
@@ -37,40 +37,26 @@ signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
 def run_floodlight():
-    """
-    Run the Floodlight.py script.
-    """
     print("Activating Floodlight...")
     subprocess.run(["python3", "/home/pi/Desktop/Sensing/Light/Floodlight.py"], check=False)
 
 def capture_image():
-    """
-    Run the capture_image.py script.
-    """
     print("Capturing image...")
     subprocess.run(["python3", "/home/pi/Desktop/Sensing/Camera/capture_image.py"], check=False)
 
 def run_all_deterrents():
-    """
-    Run the Run_all_deterrents.py script.
-    """
-    print("Running all deterrents...")
+    print("Running deterrents...")
     subprocess.run(["python3", "/home/pi/Desktop/Sensing/Run_all_deterrents.py"], check=False)
 
 try:
     start = time.time()
     print("Waiting for motion... Press Ctrl+C to quit.")
-    for i in range(1):
-        print(i)
-        pir_state = pir_line.get_value()  # Read the PIR sensor state
-        input_state = input_line.get_value()  # Read the input pin state
-
-        print(f"PIR Sensor State: {pir_state}")  # Print the PIR GPIO state
-        print(f"Input Pin State: {input_state}")  # Print the input GPIO state
+    while condition:
+        print(f"PIR Sensor State: {pir_line.get_value()}")  # Print the PIR GPIO state
+        print(f"Switch Pin State: {switch_line.get_value()}")  # Print the input GPIO state
 
         if pir_state:
             print("Motion detected!")
-
             # Start Floodlight and capture image concurrently
             floodlight_thread = Thread(target=run_floodlight)
             capture_thread = Thread(target=capture_image)
@@ -81,20 +67,21 @@ try:
             floodlight_thread.join()
             capture_thread.join()
 
-            # Check if input pin is HIGH (5V) to activate deterrents
-            time.sleep(2)
-            print("Input pin is HIGH. Running deterrents.")
-            deterrents_thread = Thread(target=run_all_deterrents)
-            deterrents_thread.start()
-            deterrents_thread.join()
+            # Check if the switch pin is HIGH (5V) to activate deterrents
+            if switch_state:
+                time.sleep(1)
+                print("Running deterrents.")
+                deterrents_thread = Thread(target=run_all_deterrents)
+                deterrents_thread.start()
+                deterrents_thread.join()
 
         # Sleep for a short duration to prevent busy-waiting
-        time.sleep(2)
+        time.sleep(0.5)
 
 except Exception as e:
     print(f"An error occurred: {e}")
 
 finally:
     pir_line.release()  # Release the PIR sensor line
-    input_line.release()  # Release the input line
+    switch_line.release()  # Release the input line
     print("GPIO cleanup complete.")
