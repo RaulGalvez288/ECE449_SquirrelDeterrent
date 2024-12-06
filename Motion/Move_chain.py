@@ -43,7 +43,7 @@ try:
     init()
     seconds = 0.25
     start = time.time()
-    while (time.time() - start) < 10:
+    while (time.time() - start) < 5:
         print("forward")
         forward(seconds)
         print("reverse")

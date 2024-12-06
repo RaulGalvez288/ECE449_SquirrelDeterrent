@@ -5,7 +5,7 @@ import signal
 import sys
 
 # Set the audio volume using amixer
-os.system("amixer set 'Master' 15%")
+os.system("amixer set 'Master' 100%")
 
 # Initialize Pygame mixer
 pygame.mixer.init()

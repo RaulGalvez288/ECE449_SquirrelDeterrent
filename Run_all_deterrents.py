@@ -15,7 +15,7 @@ def run_scripts():
     processes.append(subprocess.Popen(["python3", "/home/pi/Desktop/Sensing/Sound/play_random.py"]))
     
     # Start test.py in the ./Motion directory
-    processes.append(subprocess.Popen(["python3", "/home/pi/Desktop/Sensing/Motion/test.py"]))
+    processes.append(subprocess.Popen(["python3", "/home/pi/Desktop/Sensing/Motion/Move_chain.py"]))
     
     # Wait for all processes to complete
     for process in processes:

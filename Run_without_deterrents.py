@@ -1,3 +1,4 @@
+
 import time
 import gpiod
 import subprocess
@@ -37,31 +38,18 @@ signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
 def run_floodlight():
-    """
-    Run the Floodlight.py script.
-    """
-    print("Activating Floodlight...")
     subprocess.run(["python3", "/home/pi/Desktop/Sensing/Light/Floodlight.py"], check=False)
 
 def capture_image():
-    """
-    Run the capture_image.py script.
-    """
-    print("Capturing image...")
     subprocess.run(["python3", "/home/pi/Desktop/Sensing/Camera/capture_image.py"], check=False)
 
 def run_all_deterrents():
-    """
-    Run the Run_all_deterrents.py script.
-    """
-    print("Running all deterrents...")
     subprocess.run(["python3", "/home/pi/Desktop/Sensing/Run_all_deterrents.py"], check=False)
 
 try:
     start = time.time()
     print("Waiting for motion... Press Ctrl+C to quit.")
     for i in range(1):
-        print(i)
         pir_state = pir_line.get_value()  # Read the PIR sensor state
         input_state = input_line.get_value()  # Read the input pin state
 
@@ -70,8 +58,6 @@ try:
 
         if pir_state:
             print("Motion detected!")
-
-            # Start Floodlight and capture image concurrently
             floodlight_thread = Thread(target=run_floodlight)
             capture_thread = Thread(target=capture_image)
             
@@ -81,15 +67,17 @@ try:
             floodlight_thread.join()
             capture_thread.join()
 
-            # Check if input pin is HIGH (5V) to activate deterrents
-            time.sleep(2)
-            print("Input pin is HIGH. Running deterrents.")
+        if False:
+            print("Running all deterrents!")
             deterrents_thread = Thread(target=run_all_deterrents)
             deterrents_thread.start()
             deterrents_thread.join()
 
-        # Sleep for a short duration to prevent busy-waiting
-        time.sleep(2)
+        # Small slaeep to avoid busy-waiting; replace with event-based logic if possible
+        for _ in range(5):  # Break the delay into smaller chunks
+            if not condition:  # Check the `condition` flag during the delay
+                break
+            time.sleep(0.1)  # Sleep in 0.1-second increments
 
 except Exception as e:
     print(f"An error occurred: {e}")
